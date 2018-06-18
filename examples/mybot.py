@@ -5,7 +5,12 @@ import telebot
 from telebot import types
 import time
 import os
-TOKEN = "TOKEN"             #Token obtained from @BotFather
+
+
+#Token obtained from @BotFather
+
+TOKEN = 'TOKEN'
+print("TOKEN: " + TOKEN)
 
 userStep = {}               #Dictionary which contains users' ID and current menu number
 knownUsers = []             #List of conected users
@@ -130,3 +135,22 @@ def info_opt(m):
         bot.send_message(cid, "Main menu", reply_markup=menu)
     else:
         command_help(m)
+
+#EXEC COMMAND
+@bot.message_handler(commands=['exec'])
+def command_exec(m):
+    cid = m.chat.id
+    if cid == "USER ID":                                   #Change this line!
+        bot.send_message(cid, "Executing: " + m.text[len("/exec"):])
+        bot.send_chat_action(cid, 'typing')
+        time.sleep(2)                                      #Wait 2 seconds
+        #Execute the new command sent
+        f = os.popen(m.text[len("/exec"):])
+        result = f.read() #Obtain the command result
+        bot.send_message(cid, "Result: " + result)         #Sends the result
+    else:                                                  #If the user does not match
+        bot.send_message(cid, "PERMISSION DENIED!!!!")
+        print(color.RED + "PERMISSION DENIED!!!!" + color.ENDC)
+
+print 'Running...'
+bot.polling(none_stop=True)
