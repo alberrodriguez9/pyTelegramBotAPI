@@ -9,8 +9,7 @@ import os
 
 #Token obtained from @BotFather
 
-TOKEN = 'TOKEN'
-print("TOKEN: " + TOKEN)
+TOKEN = "TOKEN"
 
 userStep = {}               #Dictionary which contains users' ID and current menu number
 knownUsers = []             #List of conected users
@@ -80,15 +79,18 @@ def command_help(m):
     bot.send_message(cid, help_text)        #Send help message
 
 menu = types.ReplyKeyboardMarkup()
-menu.add("RPinfo", "Camera")                #Menu buttons
+menu.add("RPinfo", "Killer_button")                #Menu buttons
 
 @bot.message_handler(func=lambda message:get_user_step(message.chat.id)==0)
 def main_menu(m):                           #Main menu function
     cid = m.chat.id
     text=m.text
-    if text == "RPiInfo":                   #If user has pressed RPinfo button
+    if text == "RPinfo":                   #If user has pressed RPinfo button
         bot.send_message(cid, "Available info ", reply_markup=info_menu)
         userStep[cid] = 1                   #Changes button number
+    elif text == "Killer_button":           #If user has pressed Killer_switch button
+        bot.send_message(cid, "Available info ", reply_markup=killer_menu)
+        userStep[cid] = 2                   #Changes button number
     else:                                   #If none of the previous ones, show help
         command_help(m)
 
@@ -136,11 +138,31 @@ def info_opt(m):
     else:
         command_help(m)
 
+killer_menu = types.ReplyKeyboardMarkup()
+killer_menu.add("ON", "OFF")
+
+@bot.message_handler(func=lambda message: get_user_step(message.chat.id) == 2)
+def switch_opt(m):
+    cid = m.chat.id                         #User ID
+    txt = m.text                            #Received message
+    if txt == "ON":                         #ON button
+        bot.send_message(cid, "Button switched ON") #Send the message 
+        print(color.GREEN + "Button switched ON" + color.ENDC)
+        os.system('ls')
+    elif txt == "OFF":                      #OFF Button
+        bot.send_message(cid, "Button switched OFF") #Send the message
+        print(color.RED + "Button switched OFF" + color.ENDC)
+        os.system('ls')
+    else:
+        command_help(m)
+
 #EXEC COMMAND
 @bot.message_handler(commands=['exec'])
 def command_exec(m):
     cid = m.chat.id
-    if cid == "USER ID":                                   #Change this line!
+    print("CID: ") 
+    print(cid)
+    if cid == "User ID":                                   #Change this line!
         bot.send_message(cid, "Executing: " + m.text[len("/exec"):])
         bot.send_chat_action(cid, 'typing')
         time.sleep(2)                                      #Wait 2 seconds
